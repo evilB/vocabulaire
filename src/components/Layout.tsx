@@ -4,9 +4,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { pathname } = useLocation();
 
   const nav = [
-    { to: '/', label: '🏠 Home' },
-    { to: '/lessons', label: '📚 Lessen' },
-    { to: '/history', label: '📊 Geschiedenis' },
+    { to: '/', label: '🏠 Accueil' },
+    { to: '/lessons', label: '📚 Leçons' },
+    { to: '/history', label: '📊 Historique' },
   ];
 
   return (

@@ -37,9 +37,9 @@ export default function ImportPage({ store }: Props) {
   if (!lesson) {
     return (
       <div className="text-center py-16 text-gray-400">
-        <p>Les niet gevonden.</p>
+        <p>Leçon introuvable.</p>
         <Link to="/lessons" className="text-purple-500 underline mt-2 block">
-          Terug naar lessen
+          Retour aux leçons
         </Link>
       </div>
     );
@@ -60,13 +60,13 @@ export default function ImportPage({ store }: Props) {
       <div className="text-center py-16 space-y-4">
         <p className="text-5xl">🎉</p>
         <p className="text-xl font-bold text-purple-700">
-          {preview!.length} kaart{preview!.length !== 1 ? 'en' : ''} geïmporteerd!
+          {preview!.length} carte{preview!.length !== 1 ? 's' : ''} importée{preview!.length !== 1 ? 's' : ''} !
         </p>
         <button
           onClick={() => navigate(`/lessons/${lesson.id}`)}
           className="bg-purple-500 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-purple-600 transition-colors"
         >
-          Terug naar {lesson.name}
+          Retour à {lesson.name}
         </button>
       </div>
     );
@@ -82,14 +82,14 @@ export default function ImportPage({ store }: Props) {
           ←
         </button>
         <h1 className="text-2xl font-extrabold text-purple-700">
-          📋 Importeren in "{lesson.name}"
+          📋 Importer dans « {lesson.name} »
         </h1>
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm p-5 space-y-4">
         <p className="text-sm text-gray-600">
-          Plak Nederlandse en Franse woordparen — één per regel, gescheiden door een{' '}
-          <strong>tab</strong> of <strong>komma</strong>.
+          Colle des paires de mots néerlandais-français — une par ligne, séparées par une{' '}
+          <strong>tabulation</strong> ou une <strong>virgule</strong>.
         </p>
         <div className="bg-gray-50 rounded-xl p-3 text-xs text-gray-400 font-mono">
           hond{'\t'}chien
@@ -102,7 +102,7 @@ export default function ImportPage({ store }: Props) {
           value={raw}
           onChange={(e) => { setRaw(e.target.value); setPreview(null); }}
           rows={10}
-          placeholder="Plak hier je woordparen…"
+          placeholder="Colle tes paires de mots ici…"
           className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-purple-400 resize-y"
         />
         <button
@@ -110,18 +110,18 @@ export default function ImportPage({ store }: Props) {
           disabled={!raw.trim()}
           className="bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-indigo-600 disabled:opacity-40 transition-colors"
         >
-          Voorbeeld
+          Aperçu
         </button>
       </div>
 
       {preview !== null && (
         <div className="bg-white rounded-2xl shadow-sm p-5 space-y-4">
           {preview.length === 0 ? (
-            <p className="text-red-500 text-sm">Geen geldige paren gevonden. Controleer het formaat.</p>
+            <p className="text-red-500 text-sm">Aucune paire valide trouvée. Vérifie le format.</p>
           ) : (
             <>
               <p className="font-bold text-gray-700">
-                {preview.length} paar{preview.length !== 1 ? ' gevonden' : ' gevonden'}
+                {preview.length} paire{preview.length !== 1 ? 's' : ''} trouvée{preview.length !== 1 ? 's' : ''}
               </p>
               <div className="max-h-64 overflow-y-auto space-y-1">
                 {preview.map((p, i) => (
@@ -136,7 +136,7 @@ export default function ImportPage({ store }: Props) {
                 onClick={handleImport}
                 className="bg-purple-500 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-purple-600 transition-colors"
               >
-                ✅ Importeer {preview.length} kaart{preview.length !== 1 ? 'en' : ''}
+                ✅ Importer {preview.length} carte{preview.length !== 1 ? 's' : ''}
               </button>
             </>
           )}

@@ -36,33 +36,32 @@ export default function LessonListPage({ store }: Props) {
       importBackup(data);
       const lessonCount = data.lessons.length;
       const cardCount = data.cards.length;
-      setImportStatus({ type: 'success', msg: `${lessonCount} lessen en ${cardCount} kaarten geïmporteerd.` });
+      setImportStatus({ type: 'success', msg: `${lessonCount} leçon${lessonCount !== 1 ? 's' : ''} et ${cardCount} carte${cardCount !== 1 ? 's' : ''} importées.` });
     } catch (err) {
       setImportStatus({ type: 'error', msg: (err as Error).message });
     }
-    // Reset file input so the same file can be re-imported if needed
     if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-extrabold text-purple-700">📚 Lessen</h1>
+        <h1 className="text-2xl font-extrabold text-purple-700">📚 Leçons</h1>
         <div className="flex gap-2">
           <button
             onClick={handleExport}
             disabled={lessons.length === 0}
             className="text-sm bg-indigo-100 text-indigo-700 font-semibold px-3 py-1.5 rounded-xl hover:bg-indigo-200 disabled:opacity-40 transition-colors"
-            title="Exporteer alle lessen als JSON"
+            title="Exporter toutes les leçons en JSON"
           >
-            ⬇ Exporteren
+            ⬇ Exporter
           </button>
           <button
             onClick={() => fileInputRef.current?.click()}
             className="text-sm bg-green-100 text-green-700 font-semibold px-3 py-1.5 rounded-xl hover:bg-green-200 transition-colors"
-            title="Importeer lessen uit JSON bestand"
+            title="Importer des leçons depuis un fichier JSON"
           >
-            ⬆ Importeren
+            ⬆ Importer
           </button>
           <input
             ref={fileInputRef}
@@ -92,7 +91,7 @@ export default function LessonListPage({ store }: Props) {
           type="text"
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
-          placeholder="Naam nieuwe les…"
+          placeholder="Nom de la nouvelle leçon…"
           className="flex-1 border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400"
         />
         <button
@@ -100,7 +99,7 @@ export default function LessonListPage({ store }: Props) {
           disabled={!newName.trim()}
           className="bg-purple-500 text-white px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-purple-600 disabled:opacity-40 transition-colors"
         >
-          Aanmaken
+          Créer
         </button>
       </form>
 
@@ -119,7 +118,7 @@ export default function LessonListPage({ store }: Props) {
                 >
                   <p className="font-bold text-gray-800">{lesson.name}</p>
                   <p className="text-sm text-gray-400">
-                    {count} kaart{count !== 1 ? 'en' : ''}
+                    {count} carte{count !== 1 ? 's' : ''}
                   </p>
                 </button>
                 {confirmDelete === lesson.id ? (
@@ -128,20 +127,20 @@ export default function LessonListPage({ store }: Props) {
                       onClick={() => deleteLesson(lesson.id)}
                       className="text-red-600 font-semibold text-sm"
                     >
-                      Verwijderen
+                      Supprimer
                     </button>
                     <button
                       onClick={() => setConfirmDelete(null)}
                       className="text-gray-400 text-sm"
                     >
-                      Annuleren
+                      Annuler
                     </button>
                   </div>
                 ) : (
                   <button
                     onClick={() => setConfirmDelete(lesson.id)}
                     className="text-gray-300 hover:text-red-400 transition-colors text-xl leading-none"
-                    title="Les verwijderen"
+                    title="Supprimer la leçon"
                   >
                     ×
                   </button>
@@ -151,7 +150,7 @@ export default function LessonListPage({ store }: Props) {
           })}
         </div>
       ) : (
-        <p className="text-gray-400 text-center py-8">Nog geen lessen. Maak er één aan hierboven!</p>
+        <p className="text-gray-400 text-center py-8">Aucune leçon. Crées-en une ci-dessus !</p>
       )}
     </div>
   );

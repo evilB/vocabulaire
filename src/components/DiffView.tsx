@@ -24,7 +24,7 @@ export default function DiffView({ diff }: Props) {
   return (
     <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 space-y-2 text-sm font-mono">
       <div className="flex items-baseline gap-3">
-        <span className="text-gray-400 text-xs w-24 shrink-0 text-right font-sans">Jij:</span>
+        <span className="text-gray-400 text-xs w-24 shrink-0 text-right font-sans">Toi :</span>
         <span className="tracking-wide text-base leading-relaxed">
           {diff.inputTokens.map((t, i) => (
             <TokenSpan key={i} token={t} />
@@ -32,7 +32,7 @@ export default function DiffView({ diff }: Props) {
         </span>
       </div>
       <div className="flex items-baseline gap-3">
-        <span className="text-gray-400 text-xs w-24 shrink-0 text-right font-sans">Juist:</span>
+        <span className="text-gray-400 text-xs w-24 shrink-0 text-right font-sans">Correct :</span>
         <span className="tracking-wide text-base leading-relaxed">
           {diff.expectedTokens.map((t, i) => (
             <TokenSpan key={i} token={t} />
@@ -40,9 +40,9 @@ export default function DiffView({ diff }: Props) {
         </span>
       </div>
       <div className="flex gap-3 pt-1 flex-wrap font-sans text-xs text-gray-400">
-        <span><span className="bg-red-100 text-red-600 rounded px-1">abc</span> verkeerd</span>
+        <span><span className="bg-red-100 text-red-600 rounded px-1">abc</span> incorrect</span>
         <span><span className="bg-amber-100 text-amber-700 rounded px-1">abc</span> accent</span>
-        <span><span className="bg-green-100 text-green-700 rounded px-1">abc</span> ontbreekt / juist</span>
+        <span><span className="bg-green-100 text-green-700 rounded px-1">abc</span> manquant / correct</span>
       </div>
     </div>
   );

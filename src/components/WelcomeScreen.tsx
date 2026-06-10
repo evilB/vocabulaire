@@ -19,9 +19,9 @@ export default function WelcomeScreen({ onSave }: Props) {
       <div className="bg-white rounded-3xl shadow-xl p-10 max-w-sm w-full text-center space-y-6">
         <p className="text-6xl">🦊</p>
         <div>
-          <h1 className="text-2xl font-extrabold text-purple-700">Bienvenue!</h1>
+          <h1 className="text-2xl font-extrabold text-purple-700">Bienvenue !</h1>
           <p className="text-gray-500 mt-2 text-sm">
-            Comment tu t'appelles?
+            Comment tu t'appelles ?
           </p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-3">
@@ -29,7 +29,7 @@ export default function WelcomeScreen({ onSave }: Props) {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Jouw naam…"
+            placeholder="Ton prénom…"
             autoFocus
             className="w-full text-center text-lg font-semibold border-2 border-gray-200 rounded-2xl px-4 py-3 focus:outline-none focus:border-purple-400 transition-colors"
           />
@@ -38,7 +38,7 @@ export default function WelcomeScreen({ onSave }: Props) {
             disabled={!input.trim()}
             className="w-full bg-purple-500 text-white py-3 rounded-2xl font-bold text-lg hover:bg-purple-600 disabled:opacity-40 transition-colors"
           >
-            Allons-y! →
+            Allons-y ! →
           </button>
         </form>
       </div>

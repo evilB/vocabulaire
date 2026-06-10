@@ -25,9 +25,9 @@ export default function LessonDetailPage({ store }: Props) {
   if (!lesson) {
     return (
       <div className="text-center py-16 text-gray-400">
-        <p>Les niet gevonden.</p>
+        <p>Leçon introuvable.</p>
         <Link to="/lessons" className="text-purple-500 underline mt-2 block">
-          Terug naar lessen
+          Retour aux leçons
         </Link>
       </div>
     );
@@ -72,14 +72,14 @@ export default function LessonDetailPage({ store }: Props) {
               autoFocus
               className="flex-1 border border-gray-300 rounded-xl px-3 py-1.5 text-lg font-bold focus:outline-none focus:ring-2 focus:ring-purple-400"
             />
-            <button type="submit" className="text-purple-600 font-semibold text-sm">Opslaan</button>
-            <button type="button" onClick={() => setRenaming(false)} className="text-gray-400 text-sm">Annuleren</button>
+            <button type="submit" className="text-purple-600 font-semibold text-sm">Enregistrer</button>
+            <button type="button" onClick={() => setRenaming(false)} className="text-gray-400 text-sm">Annuler</button>
           </form>
         ) : (
           <h1
             className="text-2xl font-extrabold text-purple-700 flex-1 cursor-pointer hover:underline"
             onClick={() => { setNameInput(lesson.name); setRenaming(true); }}
-            title="Klik om naam te wijzigen"
+            title="Cliquer pour renommer"
           >
             {lesson.name}
           </h1>
@@ -88,24 +88,24 @@ export default function LessonDetailPage({ store }: Props) {
           to={`/lessons/${lesson.id}/import`}
           className="text-sm bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-xl font-semibold hover:bg-indigo-200 transition-colors"
         >
-          📋 Importeren
+          📋 Importer
         </Link>
       </div>
 
       {/* Add card form */}
       <form onSubmit={handleAddCard} className="bg-white rounded-2xl shadow-sm p-4 space-y-3">
-        <p className="font-bold text-gray-700 text-sm">Kaart toevoegen</p>
+        <p className="font-bold text-gray-700 text-sm">Ajouter une carte</p>
         <div className="flex gap-2">
           <input
             value={newDutch}
             onChange={(e) => setNewDutch(e.target.value)}
-            placeholder="Nederlands"
+            placeholder="Néerlandais"
             className="flex-1 border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400"
           />
           <input
             value={newFrench}
             onChange={(e) => setNewFrench(e.target.value)}
-            placeholder="Frans"
+            placeholder="Français"
             className="flex-1 border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400"
           />
           <button
@@ -113,7 +113,7 @@ export default function LessonDetailPage({ store }: Props) {
             disabled={!newDutch.trim() || !newFrench.trim()}
             className="bg-purple-500 text-white px-4 py-2 rounded-xl font-semibold text-sm hover:bg-purple-600 disabled:opacity-40 transition-colors"
           >
-            Toevoegen
+            Ajouter
           </button>
         </div>
       </form>
@@ -122,7 +122,7 @@ export default function LessonDetailPage({ store }: Props) {
       {lessonCards.length > 0 ? (
         <div className="space-y-2">
           <p className="text-sm text-gray-400 font-semibold">
-            {lessonCards.length} kaart{lessonCards.length !== 1 ? 'en' : ''}
+            {lessonCards.length} carte{lessonCards.length !== 1 ? 's' : ''}
           </p>
           {lessonCards.map((card) =>
             editing?.id === card.id ? (
@@ -141,7 +141,7 @@ export default function LessonDetailPage({ store }: Props) {
                   onChange={(e) => setEditing({ ...editing, french: e.target.value })}
                   className="flex-1 border border-gray-300 rounded-lg px-2 py-1 text-sm focus:outline-none"
                 />
-                <button type="submit" className="text-purple-600 font-semibold text-sm">Opslaan</button>
+                <button type="submit" className="text-purple-600 font-semibold text-sm">Enregistrer</button>
                 <button type="button" onClick={() => setEditing(null)} className="text-gray-400 text-sm">✕</button>
               </form>
             ) : (
@@ -155,13 +155,13 @@ export default function LessonDetailPage({ store }: Props) {
                 <button
                   onClick={() => setEditing(card)}
                   className="text-gray-300 hover:text-purple-500 transition-colors text-sm"
-                  title="Bewerken"
+                  title="Modifier"
                 >
                   ✏️
                 </button>
                 {confirmDelete === card.id ? (
                   <>
-                    <button onClick={() => deleteCard(card.id)} className="text-red-500 text-xs font-semibold">Wis</button>
+                    <button onClick={() => deleteCard(card.id)} className="text-red-500 text-xs font-semibold">Suppr.</button>
                     <button onClick={() => setConfirmDelete(null)} className="text-gray-400 text-xs">✕</button>
                   </>
                 ) : (
@@ -178,7 +178,7 @@ export default function LessonDetailPage({ store }: Props) {
         </div>
       ) : (
         <p className="text-gray-400 text-center py-6">
-          Nog geen kaarten. Voeg er één toe hierboven of gebruik Importeren.
+          Aucune carte. Ajoute-en une ci-dessus ou utilise Importer.
         </p>
       )}
     </div>

@@ -11,7 +11,7 @@ interface Props {
 type DirectionChoice = Direction | 'both';
 
 const DIRECTION_OPTIONS: { value: DirectionChoice; label: string }[] = [
-  { value: 'both', label: 'Beide richtingen' },
+  { value: 'both', label: 'Les deux sens' },
   { value: 'nl-fr', label: 'NL → FR' },
   { value: 'fr-nl', label: 'FR → NL' },
 ];
@@ -39,15 +39,15 @@ export default function HomePage({ store }: Props) {
   return (
     <div className="space-y-6">
       <div className="text-center pt-2">
-        <h1 className="text-3xl font-extrabold text-purple-700">Bonjour, {userName}! 🌟</h1>
-        <p className="text-gray-500 mt-1">Qu'est-ce que tu veux pratiquer aujourd'hui?</p>
+        <h1 className="text-3xl font-extrabold text-purple-700">Bonjour, {userName} ! 🌟</h1>
+        <p className="text-gray-500 mt-1">Qu'est-ce que tu veux pratiquer aujourd'hui ?</p>
       </div>
 
       {/* Direction + mode selector */}
       {cards.length > 0 && (
         <div className="bg-white rounded-2xl shadow-sm p-4 space-y-4">
           <div className="space-y-2">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Richting</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Direction</p>
             <div className="flex gap-2">
               {DIRECTION_OPTIONS.map(({ value, label }) => (
                 <button
@@ -66,7 +66,7 @@ export default function HomePage({ store }: Props) {
           </div>
 
           <div className="space-y-2">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Accenten</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Accents</p>
             <div className="flex gap-2">
               <button
                 onClick={() => setStrictMode(false)}
@@ -76,7 +76,7 @@ export default function HomePage({ store }: Props) {
                     : 'bg-gray-100 text-gray-600 hover:bg-green-100 hover:text-green-700'
                 }`}
               >
-                😊 Soepel
+                😊 Souple
               </button>
               <button
                 onClick={() => setStrictMode(true)}
@@ -86,13 +86,13 @@ export default function HomePage({ store }: Props) {
                     : 'bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-700'
                 }`}
               >
-                🎯 Streng
+                🎯 Strict
               </button>
             </div>
             <p className="text-xs text-gray-400">
               {strictMode
-                ? 'Exacte accenten vereist — é ≠ e'
-                : 'Accenten worden vergeven — é = e (maar wel getoond)'}
+                ? 'Accents exacts requis — é ≠ e'
+                : 'Accents facultatifs — é = e (mais affiché)'}
             </p>
           </div>
         </div>
@@ -104,10 +104,10 @@ export default function HomePage({ store }: Props) {
           onClick={() => startQuiz()}
           className="w-full py-5 rounded-2xl bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-bold text-lg shadow-md hover:shadow-lg transition-shadow"
         >
-          🎯 Alle kaarten oefenen
+          🎯 Pratiquer toutes les cartes
           {totalDue > 0 && (
             <span className="ml-2 bg-white/20 text-sm px-2 py-0.5 rounded-full">
-              {totalDue} klaar
+              {totalDue} à réviser
             </span>
           )}
         </button>
@@ -117,7 +117,7 @@ export default function HomePage({ store }: Props) {
       {recommended && recommended.dueCount > 0 && (
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
           <p className="text-xs font-semibold text-amber-600 uppercase tracking-wide mb-2">
-            ⭐ Aanbevolen
+            ⭐ Recommandé
           </p>
           <button
             onClick={() => startQuiz(recommended.lesson.id)}
@@ -125,7 +125,7 @@ export default function HomePage({ store }: Props) {
           >
             <p className="font-bold text-gray-800 text-lg">{recommended.lesson.name}</p>
             <p className="text-sm text-gray-500">
-              {recommended.dueCount} kaart{recommended.dueCount !== 1 ? 'en' : ''} klaar voor herhaling
+              {recommended.dueCount} carte{recommended.dueCount !== 1 ? 's' : ''} à réviser
             </p>
           </button>
         </div>
@@ -134,7 +134,7 @@ export default function HomePage({ store }: Props) {
       {/* Lesson list */}
       {ranked.length > 0 ? (
         <div className="space-y-3">
-          <h2 className="font-bold text-gray-700 text-sm uppercase tracking-wide">Alle lessen</h2>
+          <h2 className="font-bold text-gray-700 text-sm uppercase tracking-wide">Toutes les leçons</h2>
           {ranked.map(({ lesson, cardCount, dueCount }) => (
             <div
               key={lesson.id}
@@ -143,10 +143,10 @@ export default function HomePage({ store }: Props) {
               <div className="flex-1">
                 <p className="font-bold text-gray-800">{lesson.name}</p>
                 <p className="text-sm text-gray-400">
-                  {cardCount} kaart{cardCount !== 1 ? 'en' : ''}
+                  {cardCount} carte{cardCount !== 1 ? 's' : ''}
                   {dueCount > 0 && (
                     <span className="ml-2 text-orange-500 font-semibold">
-                      · {dueCount} klaar
+                      · {dueCount} à réviser
                     </span>
                   )}
                 </p>
@@ -156,7 +156,7 @@ export default function HomePage({ store }: Props) {
                   onClick={() => startQuiz(lesson.id)}
                   className="bg-purple-100 text-purple-700 font-semibold px-4 py-2 rounded-xl text-sm hover:bg-purple-200 transition-colors"
                 >
-                  Oefenen
+                  Pratiquer
                 </button>
               )}
             </div>
@@ -165,9 +165,9 @@ export default function HomePage({ store }: Props) {
       ) : (
         <div className="text-center py-12 text-gray-400">
           <p className="text-5xl mb-4">📭</p>
-          <p className="font-semibold">Nog geen lessen.</p>
+          <p className="font-semibold">Aucune leçon pour l'instant.</p>
           <p className="text-sm mt-1">
-            Ga naar <strong>Lessen</strong> om je eerste les aan te maken.
+            Va dans <strong>Leçons</strong> pour créer ta première leçon.
           </p>
         </div>
       )}

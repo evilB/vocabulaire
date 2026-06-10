@@ -11,7 +11,7 @@ function formatDuration(seconds: number): string {
 }
 
 function formatDate(ts: number): string {
-  return new Date(ts).toLocaleDateString('nl-NL', {
+  return new Date(ts).toLocaleDateString('fr-FR', {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
@@ -20,7 +20,7 @@ function formatDate(ts: number): string {
 }
 
 function formatTime(ts: number): string {
-  return new Date(ts).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+  return new Date(ts).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 }
 
 export default function HistoryPage({ store }: Props) {
@@ -35,13 +35,13 @@ export default function HistoryPage({ store }: Props) {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-extrabold text-purple-700">📊 Geschiedenis</h1>
+      <h1 className="text-2xl font-extrabold text-purple-700">📊 Historique</h1>
 
       {sessionLogs.length > 0 && (
         <div className="grid grid-cols-3 gap-3">
-          <StatCard label="Sessies" value={totalSessions} />
-          <StatCard label="Kaarten geoefend" value={totalCards} />
-          <StatCard label="Nauwkeurigheid" value={`${avgAccuracy}%`} />
+          <StatCard label="Sessions" value={totalSessions} />
+          <StatCard label="Cartes pratiquées" value={totalCards} />
+          <StatCard label="Précision" value={`${avgAccuracy}%`} />
         </div>
       )}
 
@@ -74,8 +74,8 @@ export default function HistoryPage({ store }: Props) {
                   </span>
                 </div>
                 <div className="flex gap-4 mt-2 text-xs text-gray-500">
-                  <span>🃏 {log.cardsTrained} kaarten</span>
-                  <span>✓ {log.correctCount} goed</span>
+                  <span>🃏 {log.cardsTrained} cartes</span>
+                  <span>✓ {log.correctCount} correct{log.correctCount !== 1 ? 'es' : ''}</span>
                   <span>⏱ {formatDuration(log.duration)}</span>
                 </div>
               </div>
@@ -85,13 +85,13 @@ export default function HistoryPage({ store }: Props) {
       ) : (
         <div className="text-center py-16 text-gray-400">
           <p className="text-5xl mb-4">📭</p>
-          <p className="font-semibold">Nog geen sessies.</p>
-          <p className="text-sm mt-1">Voltooi een quiz om je geschiedenis hier te zien.</p>
+          <p className="font-semibold">Aucune session pour l'instant.</p>
+          <p className="text-sm mt-1">Complète un quiz pour voir ton historique ici.</p>
           <button
             onClick={() => navigate('/')}
             className="mt-4 text-purple-500 font-semibold underline text-sm"
           >
-            Ga oefenen!
+            Vas pratiquer !
           </button>
         </div>
       )}
