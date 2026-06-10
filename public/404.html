@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      // GitHub Pages SPA: save the path and redirect to index
+      var path = window.location.pathname.replace('/vocabulaire', '') + window.location.search + window.location.hash;
+      sessionStorage.setItem('spa-redirect', path || '/');
+      window.location.replace('/vocabulaire/');
+    </script>
+  </head>
+  <body></body>
+</html>
