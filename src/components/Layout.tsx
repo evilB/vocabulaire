@@ -13,7 +13,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-gradient-to-b from-purple-100 to-blue-50">
       <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-6">
-          <span className="text-xl font-extrabold text-purple-600 mr-auto">🦊 Flashcards</span>
+          <span className="text-xl font-extrabold text-purple-600 mr-auto">🦊 Vocabulaire</span>
           {nav.map(({ to, label }) => (
             <Link
               key={to}
