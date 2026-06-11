@@ -31,6 +31,23 @@ export function checkAnswer(input: string, expected: string): AnswerResult {
   return 'wrong';
 }
 
+export interface MultiCheckResult {
+  result: AnswerResult;
+  /** The synonym that matched best (or synonyms[0] when all wrong). */
+  matched: string;
+}
+
+/** Check input against multiple synonyms, returning the best match. */
+export function checkAnswerMulti(input: string, synonyms: string[]): MultiCheckResult {
+  for (const syn of synonyms) {
+    if (checkAnswer(input, syn) === 'correct') return { result: 'correct', matched: syn };
+  }
+  for (const syn of synonyms) {
+    if (checkAnswer(input, syn) === 'almost') return { result: 'almost', matched: syn };
+  }
+  return { result: 'wrong', matched: synonyms[0] };
+}
+
 /** Whether the result should be accepted (count as correct) given the mode. */
 export function isAccepted(result: AnswerResult, strict: boolean): boolean {
   return result === 'correct' || (result === 'almost' && !strict);

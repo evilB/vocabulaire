@@ -88,8 +88,8 @@ export function useStore() {
 
   // Cards
   const addCard = useCallback(
-    (lessonId: string, dutch: string, french: string): Card => {
-      const card: Card = { id: generateId(), lessonId, dutch, french, createdAt: Date.now() };
+    (lessonId: string, dutch: string, french: string, dutchSynonyms?: string[], frenchSynonyms?: string[]): Card => {
+      const card: Card = { id: generateId(), lessonId, dutch, french, dutchSynonyms, frenchSynonyms, createdAt: Date.now() };
       setCards([...cards, card]);
       return card;
     },
@@ -97,12 +97,14 @@ export function useStore() {
   );
 
   const addCards = useCallback(
-    (lessonId: string, pairs: { dutch: string; french: string }[]): Card[] => {
+    (lessonId: string, pairs: { dutch: string; french: string; dutchSynonyms?: string[]; frenchSynonyms?: string[] }[]): Card[] => {
       const newCards: Card[] = pairs.map((p) => ({
         id: generateId(),
         lessonId,
         dutch: p.dutch,
         french: p.french,
+        dutchSynonyms: p.dutchSynonyms,
+        frenchSynonyms: p.frenchSynonyms,
         createdAt: Date.now(),
       }));
       setCards([...cards, ...newCards]);
@@ -112,8 +114,8 @@ export function useStore() {
   );
 
   const updateCard = useCallback(
-    (id: string, dutch: string, french: string) => {
-      setCards(cards.map((c) => (c.id === id ? { ...c, dutch, french } : c)));
+    (id: string, dutch: string, french: string, dutchSynonyms?: string[], frenchSynonyms?: string[]) => {
+      setCards(cards.map((c) => (c.id === id ? { ...c, dutch, french, dutchSynonyms, frenchSynonyms } : c)));
     },
     [cards, setCards],
   );

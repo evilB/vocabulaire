@@ -3,6 +3,8 @@ export interface Card {
   lessonId: string;
   dutch: string;
   french: string;
+  dutchSynonyms?: string[];   // all Dutch forms incl. primary; absent = single form
+  frenchSynonyms?: string[];  // all French forms incl. primary; absent = single form
   createdAt: number;
 }
 

@@ -9,6 +9,32 @@ interface Props {
 interface ParsedPair {
   dutch: string;
   french: string;
+  dutchSynonyms?: string[];
+  frenchSynonyms?: string[];
+}
+
+/** Split a line by commas but not inside parentheses. */
+function splitTopLevel(line: string): string[] {
+  const parts: string[] = [];
+  let depth = 0;
+  let current = '';
+  for (const ch of line) {
+    if (ch === '(') { depth++; current += ch; }
+    else if (ch === ')') { depth--; current += ch; }
+    else if (ch === ',' && depth === 0) { parts.push(current); current = ''; }
+    else { current += ch; }
+  }
+  if (current) parts.push(current);
+  return parts;
+}
+
+/** Parse a raw field into a list of synonyms. "(a,b)" → ["a","b"], "a" → ["a"]. */
+function parseSynonymGroup(raw: string): string[] {
+  const t = raw.trim();
+  if (t.startsWith('(') && t.endsWith(')')) {
+    return t.slice(1, -1).split(',').map((s) => s.trim()).filter(Boolean);
+  }
+  return t ? [t] : [];
 }
 
 function parsePaste(text: string): ParsedPair[] {
@@ -17,11 +43,31 @@ function parsePaste(text: string): ParsedPair[] {
     .map((line) => line.trim())
     .filter(Boolean)
     .map((line) => {
-      const sep = line.includes('\t') ? '\t' : ',';
-      const parts = line.split(sep).map((s) => s.trim());
-      return { dutch: parts[0] ?? '', french: parts[1] ?? '' };
+      // Tab-separated: no synonym groups, plain values
+      if (line.includes('\t')) {
+        const parts = line.split('\t').map((s) => s.trim());
+        return { dutch: parts[0] ?? '', french: parts[1] ?? '' };
+      }
+      // Comma-separated — honour synonym groups like (a,b),(c,d)
+      const parts = splitTopLevel(line);
+      const dutchSyns = parseSynonymGroup(parts[0] ?? '');
+      const frenchSyns = parseSynonymGroup(parts[1] ?? '');
+      if (!dutchSyns.length || !frenchSyns.length) return null;
+      return {
+        dutch: dutchSyns[0],
+        french: frenchSyns[0],
+        dutchSynonyms: dutchSyns.length > 1 ? dutchSyns : undefined,
+        frenchSynonyms: frenchSyns.length > 1 ? frenchSyns : undefined,
+      };
     })
-    .filter((p) => p.dutch && p.french);
+    .filter((p): p is ParsedPair => !!p && !!p.dutch && !!p.french);
+}
+
+function displayPair(p: ParsedPair): { dutch: string; french: string } {
+  return {
+    dutch: p.dutchSynonyms ? p.dutchSynonyms.join(' / ') : p.dutch,
+    french: p.frenchSynonyms ? p.frenchSynonyms.join(' / ') : p.french,
+  };
 }
 
 export default function ImportPage({ store }: Props) {
@@ -89,14 +135,17 @@ export default function ImportPage({ store }: Props) {
       <div className="bg-white rounded-2xl shadow-sm p-5 space-y-4">
         <p className="text-sm text-gray-600">
           Colle des paires de mots néerlandais-français — une par ligne, séparées par une{' '}
-          <strong>tabulation</strong> ou une <strong>virgule</strong>.
+          <strong>tabulation</strong> ou une <strong>virgule</strong>. Pour les synonymes, utilise{' '}
+          <code className="bg-gray-100 px-1 rounded">(syn1,syn2)</code>.
         </p>
         <div className="bg-gray-50 rounded-xl p-3 text-xs text-gray-400 font-mono">
           hond{'\t'}chien
           <br />
           kat,chat
           <br />
-          school{'\t'}école
+          (de man,de heer),(le monsieur,l&apos;homme)
+          <br />
+          (mooi,knap),beau
         </div>
         <textarea
           value={raw}
@@ -124,13 +173,16 @@ export default function ImportPage({ store }: Props) {
                 {preview.length} paire{preview.length !== 1 ? 's' : ''} trouvée{preview.length !== 1 ? 's' : ''}
               </p>
               <div className="max-h-64 overflow-y-auto space-y-1">
-                {preview.map((p, i) => (
-                  <div key={i} className="flex gap-3 text-sm py-1.5 border-b border-gray-100 last:border-0">
-                    <span className="flex-1 font-semibold text-gray-700">{p.dutch}</span>
-                    <span className="text-gray-300">→</span>
-                    <span className="flex-1 text-gray-600">{p.french}</span>
-                  </div>
-                ))}
+                {preview.map((p, i) => {
+                  const { dutch, french } = displayPair(p);
+                  return (
+                    <div key={i} className="flex gap-3 text-sm py-1.5 border-b border-gray-100 last:border-0">
+                      <span className="flex-1 font-semibold text-gray-700">{dutch}</span>
+                      <span className="text-gray-300">→</span>
+                      <span className="flex-1 text-gray-600">{french}</span>
+                    </div>
+                  );
+                })}
               </div>
               <button
                 onClick={handleImport}

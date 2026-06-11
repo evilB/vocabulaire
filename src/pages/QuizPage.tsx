@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import type { Store } from '../hooks/useStore';
 import type { Card, Direction, Progress } from '../types';
 import { getOrCreateProgress, updateProgress } from '../lib/srs';
-import { checkAnswer, isAccepted, computeDiff } from '../lib/answerCheck';
+import { checkAnswerMulti, isAccepted, computeDiff } from '../lib/answerCheck';
 import type { AnswerResult, DiffResult } from '../lib/answerCheck';
 import ProgressBar from '../components/ProgressBar';
 import DiffView from '../components/DiffView';
@@ -55,6 +55,19 @@ interface ReviewResult {
   accepted: boolean;
   diff: DiffResult;
   expected: string;
+  alternatives: string[];  // other valid synonyms not matched
+}
+
+/** All synonyms for the answer side of a card. */
+function getAnswerSynonyms(card: Card, direction: Direction): string[] {
+  if (direction === 'nl-fr') return card.frenchSynonyms ?? [card.french];
+  return card.dutchSynonyms ?? [card.dutch];
+}
+
+/** All synonyms for the prompt (question) side of a card. */
+function getPromptSynonyms(card: Card, direction: Direction): string[] {
+  if (direction === 'nl-fr') return card.dutchSynonyms ?? [card.dutch];
+  return card.frenchSynonyms ?? [card.french];
 }
 
 export default function QuizPage({ store }: Props) {
@@ -112,12 +125,11 @@ export default function QuizPage({ store }: Props) {
       return;
     }
 
-    const expected =
-      current.direction === 'nl-fr' ? current.card.french : current.card.dutch;
-
-    const answerResult = checkAnswer(input, expected);
+    const synonyms = getAnswerSynonyms(current.card, current.direction);
+    const { result: answerResult, matched } = checkAnswerMulti(input, synonyms);
     const accepted = isAccepted(answerResult, strictMode);
-    const diff = computeDiff(input, expected);
+    const diff = computeDiff(input, matched);
+    const alternatives = synonyms.filter((s) => s !== matched);
 
     const currentProgress = getOrCreateProgress(progress, current.card.id, current.direction);
     const nextProgress = updateProgress(currentProgress, accepted);
@@ -125,7 +137,7 @@ export default function QuizPage({ store }: Props) {
 
     if (accepted) setCorrect((c) => c + 1);
 
-    setReviewResult({ answerResult, accepted, diff, expected });
+    setReviewResult({ answerResult, accepted, diff, expected: matched, alternatives });
   }
 
   function advance() {
@@ -190,10 +202,11 @@ export default function QuizPage({ store }: Props) {
     );
   }
 
+  const promptSynonyms = getPromptSynonyms(current.card, current.direction);
   const prompt =
     current.direction === 'nl-fr'
-      ? { from: current.card.dutch, fromLang: '🇳🇱 Néerlandais', toLang: '🇫🇷 Français' }
-      : { from: current.card.french, fromLang: '🇫🇷 Français', toLang: '🇳🇱 Néerlandais' };
+      ? { fromLang: '🇳🇱 Néerlandais', toLang: '🇫🇷 Français' }
+      : { fromLang: '🇫🇷 Français', toLang: '🇳🇱 Néerlandais' };
 
   const inputClass = reviewResult
     ? reviewResult.answerResult === 'correct'
@@ -232,7 +245,14 @@ export default function QuizPage({ store }: Props) {
         <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide">
           {prompt.fromLang} → {prompt.toLang}
         </p>
-        <p className="text-4xl font-extrabold text-gray-800 mt-2">{prompt.from}</p>
+        <p className="text-4xl font-extrabold text-gray-800 mt-2">
+          {promptSynonyms[0]}
+        </p>
+        {promptSynonyms.length > 1 && (
+          <p className="text-sm text-gray-400 mt-1">
+            {promptSynonyms.slice(1).join(' · ')}
+          </p>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-3">
@@ -265,6 +285,12 @@ export default function QuizPage({ store }: Props) {
       {feedback && (
         <div className={`text-center text-2xl font-extrabold ${feedback.cls}`}>
           {feedback.text}
+        </div>
+      )}
+
+      {reviewResult && reviewResult.alternatives.length > 0 && (
+        <div className="text-center text-sm text-gray-500">
+          Aussi accepté : <span className="font-semibold text-gray-700">{reviewResult.alternatives.join(', ')}</span>
         </div>
       )}
     </div>

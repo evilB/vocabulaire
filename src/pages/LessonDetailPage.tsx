@@ -7,6 +7,35 @@ interface Props {
   store: Store;
 }
 
+/** Convert synonyms array to editable raw string: ["a","b"] → "(a, b)", ["a"] → "a". */
+function toEditRaw(primary: string, synonyms?: string[]): string {
+  if (synonyms && synonyms.length > 1) return `(${synonyms.join(', ')})`;
+  return primary;
+}
+
+/** Parse raw edit string into primary + optional synonyms array. */
+function parseEditRaw(raw: string): { primary: string; synonyms?: string[] } {
+  const t = raw.trim();
+  if (t.startsWith('(') && t.endsWith(')')) {
+    const syns = t.slice(1, -1).split(',').map((s) => s.trim()).filter(Boolean);
+    if (syns.length > 1) return { primary: syns[0], synonyms: syns };
+    if (syns.length === 1) return { primary: syns[0] };
+  }
+  return { primary: t };
+}
+
+function cardDutchDisplay(card: Card): string {
+  return card.dutchSynonyms && card.dutchSynonyms.length > 1
+    ? card.dutchSynonyms.join(' / ')
+    : card.dutch;
+}
+
+function cardFrenchDisplay(card: Card): string {
+  return card.frenchSynonyms && card.frenchSynonyms.length > 1
+    ? card.frenchSynonyms.join(' / ')
+    : card.french;
+}
+
 export default function LessonDetailPage({ store }: Props) {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -18,6 +47,8 @@ export default function LessonDetailPage({ store }: Props) {
   const [renaming, setRenaming] = useState(false);
   const [nameInput, setNameInput] = useState(lesson?.name ?? '');
   const [editing, setEditing] = useState<Card | null>(null);
+  const [editDutchRaw, setEditDutchRaw] = useState('');
+  const [editFrenchRaw, setEditFrenchRaw] = useState('');
   const [newDutch, setNewDutch] = useState('');
   const [newFrench, setNewFrench] = useState('');
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
@@ -42,15 +73,19 @@ export default function LessonDetailPage({ store }: Props) {
   function handleAddCard(e: React.FormEvent) {
     e.preventDefault();
     if (!newDutch.trim() || !newFrench.trim()) return;
-    addCard(lesson!.id, newDutch.trim(), newFrench.trim());
+    const { primary: dutch, synonyms: dutchSynonyms } = parseEditRaw(newDutch);
+    const { primary: french, synonyms: frenchSynonyms } = parseEditRaw(newFrench);
+    addCard(lesson!.id, dutch, french, dutchSynonyms, frenchSynonyms);
     setNewDutch('');
     setNewFrench('');
   }
 
   function handleUpdateCard(e: React.FormEvent) {
     e.preventDefault();
-    if (!editing || !editing.dutch.trim() || !editing.french.trim()) return;
-    updateCard(editing.id, editing.dutch.trim(), editing.french.trim());
+    if (!editing || !editDutchRaw.trim() || !editFrenchRaw.trim()) return;
+    const { primary: dutch, synonyms: dutchSynonyms } = parseEditRaw(editDutchRaw);
+    const { primary: french, synonyms: frenchSynonyms } = parseEditRaw(editFrenchRaw);
+    updateCard(editing.id, dutch, french, dutchSynonyms, frenchSynonyms);
     setEditing(null);
   }
 
@@ -132,13 +167,15 @@ export default function LessonDetailPage({ store }: Props) {
                 className="bg-yellow-50 border border-yellow-200 rounded-2xl p-3 flex gap-2"
               >
                 <input
-                  value={editing.dutch}
-                  onChange={(e) => setEditing({ ...editing, dutch: e.target.value })}
+                  value={editDutchRaw}
+                  onChange={(e) => setEditDutchRaw(e.target.value)}
+                  placeholder="Néerlandais ou (syn1, syn2)"
                   className="flex-1 border border-gray-300 rounded-lg px-2 py-1 text-sm focus:outline-none"
                 />
                 <input
-                  value={editing.french}
-                  onChange={(e) => setEditing({ ...editing, french: e.target.value })}
+                  value={editFrenchRaw}
+                  onChange={(e) => setEditFrenchRaw(e.target.value)}
+                  placeholder="Français ou (syn1, syn2)"
                   className="flex-1 border border-gray-300 rounded-lg px-2 py-1 text-sm focus:outline-none"
                 />
                 <button type="submit" className="text-purple-600 font-semibold text-sm">Enregistrer</button>
@@ -149,11 +186,15 @@ export default function LessonDetailPage({ store }: Props) {
                 key={card.id}
                 className="bg-white rounded-2xl shadow-sm p-3 flex items-center gap-3"
               >
-                <span className="flex-1 text-sm font-semibold text-gray-700">{card.dutch}</span>
+                <span className="flex-1 text-sm font-semibold text-gray-700">{cardDutchDisplay(card)}</span>
                 <span className="text-gray-300">→</span>
-                <span className="flex-1 text-sm text-gray-600">{card.french}</span>
+                <span className="flex-1 text-sm text-gray-600">{cardFrenchDisplay(card)}</span>
                 <button
-                  onClick={() => setEditing(card)}
+                  onClick={() => {
+                    setEditing(card);
+                    setEditDutchRaw(toEditRaw(card.dutch, card.dutchSynonyms));
+                    setEditFrenchRaw(toEditRaw(card.french, card.frenchSynonyms));
+                  }}
                   className="text-gray-300 hover:text-purple-500 transition-colors text-sm"
                   title="Modifier"
                 >
