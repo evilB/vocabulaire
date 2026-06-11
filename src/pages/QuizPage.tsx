@@ -94,6 +94,7 @@ export default function QuizPage({ store }: Props) {
   const [correct, setCorrect] = useState(0);
   const [done, setDone] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const nextBtnRef = useRef<HTMLButtonElement>(null);
   const startTime = useRef(Date.now());
 
   const current = queue[index];
@@ -101,6 +102,11 @@ export default function QuizPage({ store }: Props) {
   useEffect(() => {
     if (!done) inputRef.current?.focus();
   }, [index, done]);
+
+  // After checking the answer, focus the "Suivant" button so Enter advances.
+  useEffect(() => {
+    if (reviewResult) nextBtnRef.current?.focus();
+  }, [reviewResult]);
 
   if (queue.length === 0) {
     return (
@@ -271,6 +277,7 @@ export default function QuizPage({ store }: Props) {
         )}
 
         <button
+          ref={nextBtnRef}
           type="submit"
           className={`w-full py-3.5 rounded-2xl font-bold text-white text-lg transition-colors ${
             reviewResult ? 'bg-indigo-500 hover:bg-indigo-600' : 'bg-purple-500 hover:bg-purple-600'
