@@ -61,16 +61,20 @@ interface ReviewResult {
   alternatives: string[];  // other valid synonyms not matched
 }
 
-/** All synonyms for the answer side of a card. */
+/** All synonyms for the answer side of a card, each trimmed. */
 function getAnswerSynonyms(card: Card, direction: Direction): string[] {
-  if (direction === 'nl-fr') return card.frenchSynonyms ?? [card.french];
-  return card.dutchSynonyms ?? [card.dutch];
+  const syns = direction === 'nl-fr'
+    ? (card.frenchSynonyms ?? [card.french])
+    : (card.dutchSynonyms ?? [card.dutch]);
+  return syns.map((s) => s.trim()).filter(Boolean);
 }
 
-/** All synonyms for the prompt (question) side of a card. */
+/** All synonyms for the prompt (question) side of a card, each trimmed. */
 function getPromptSynonyms(card: Card, direction: Direction): string[] {
-  if (direction === 'nl-fr') return card.dutchSynonyms ?? [card.dutch];
-  return card.frenchSynonyms ?? [card.french];
+  const syns = direction === 'nl-fr'
+    ? (card.dutchSynonyms ?? [card.dutch])
+    : (card.frenchSynonyms ?? [card.french]);
+  return syns.map((s) => s.trim()).filter(Boolean);
 }
 
 export default function QuizPage({ store }: Props) {
@@ -135,9 +139,9 @@ export default function QuizPage({ store }: Props) {
     }
 
     const synonyms = getAnswerSynonyms(current.card, current.direction);
-    const { result: answerResult, matched } = checkAnswerMulti(input, synonyms);
+    const { result: answerResult, matched } = checkAnswerMulti(input.trim(), synonyms);
     const accepted = isAccepted(answerResult, strictMode);
-    const diff = computeDiff(input, matched);
+    const diff = computeDiff(input.trim(), matched);
     const alternatives = synonyms.filter((s) => s !== matched);
 
     const currentProgress = getOrCreateProgress(progress, current.card.id, current.direction);
