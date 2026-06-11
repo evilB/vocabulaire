@@ -29,19 +29,22 @@ function buildQueue(
   const filtered = lessonId ? cards.filter((c) => c.lessonId === lessonId) : cards;
   const directions: Direction[] = dirFilter === 'both' ? ['nl-fr', 'fr-nl'] : [dirFilter];
 
-  const due: { qc: QuizCard; overdueMs: number }[] = [];
+  const all: { qc: QuizCard; repetitions: number; overdueMs: number }[] = [];
   for (const card of filtered) {
     for (const dir of directions) {
       const p = progress.find((x) => x.cardId === card.id && x.direction === dir);
-      const nextReview = p?.nextReview ?? 0;
-      if (nextReview <= now) {
-        due.push({ qc: { card, direction: dir }, overdueMs: now - nextReview });
-      }
+      const overdueMs = now - (p?.nextReview ?? 0);
+      all.push({ qc: { card, direction: dir }, repetitions: p?.repetitions ?? 0, overdueMs });
     }
   }
 
-  due.sort((a, b) => b.overdueMs - a.overdueMs + (Math.random() - 0.5) * 60_000);
-  return due.slice(0, 40).map((d) => d.qc);
+  // Least practiced first; within same repetition count, most overdue first
+  all.sort((a, b) =>
+    a.repetitions - b.repetitions ||
+    b.overdueMs - a.overdueMs +
+    (Math.random() - 0.5) * 60_000,
+  );
+  return all.slice(0, 40).map((d) => d.qc);
 }
 
 const DIR_LABEL: Record<DirectionFilter, string> = {
@@ -78,7 +81,7 @@ export default function QuizPage({ store }: Props) {
   const lessonId = params.get('lessonId');
   const isAll = params.get('all') === '1';
   const dirParam = params.get('dir') as Direction | null;
-  const dirFilter: DirectionFilter = dirParam ?? 'both';
+  const dirFilter: DirectionFilter = dirParam ?? 'nl-fr';
 
   const lessonName = useMemo(() => {
     if (isAll) return 'Toutes les cartes';
@@ -111,9 +114,9 @@ export default function QuizPage({ store }: Props) {
   if (queue.length === 0) {
     return (
       <div className="text-center py-16 space-y-4">
-        <p className="text-5xl">✨</p>
-        <p className="text-xl font-bold text-purple-700">Rien à réviser pour l'instant !</p>
-        <p className="text-gray-500 text-sm">Toutes les cartes sont à jour.</p>
+        <p className="text-5xl">📚</p>
+        <p className="text-xl font-bold text-purple-700">Aucune carte à pratiquer.</p>
+        <p className="text-gray-500 text-sm">Ajoute des cartes à cette leçon d'abord.</p>
         <button
           onClick={() => navigate('/')}
           className="bg-purple-500 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-purple-600 transition-colors"
