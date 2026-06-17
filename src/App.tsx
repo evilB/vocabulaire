@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import { useStore } from './hooks/useStore';
 import Layout from './components/Layout';
 import WelcomeScreen from './components/WelcomeScreen';
@@ -17,7 +17,7 @@ export default function App() {
   }
 
   return (
-    <BrowserRouter basename="/vocabulaire">
+    <HashRouter>
       <Routes>
         <Route
           path="/"
@@ -68,6 +68,6 @@ export default function App() {
           }
         />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
